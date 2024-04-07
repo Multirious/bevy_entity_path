@@ -113,7 +113,18 @@ impl EntityPath {
 
 impl Display for EntityPath {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        for c in self.components() {
+        let mut components = self.components().iter();
+
+        if let Some(c) = components.next() {
+            match c {
+                PathComponent::Child(name) => write!(f, "{}", name)?,
+                PathComponent::Parent => write!(f, "..")?,
+                PathComponent::Current => write!(f, ".")?,
+            }
+        };
+
+        for c in components {
+            write!(f, "/")?;
             match c {
                 PathComponent::Child(name) => write!(f, "{}", name)?,
                 PathComponent::Parent => write!(f, "..")?,
